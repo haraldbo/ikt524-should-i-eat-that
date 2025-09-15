@@ -1,0 +1,30 @@
+############ Get api status ###################
+GET http://localhost:5000/api/status
+
+
+############# Create food image to be processeds #######################
+POST http://localhost:5000/api/food
+Content-Type: multipart/form-data; boundary=----MyBoundaryString
+
+------MyBoundaryString
+Content-Disposition: form-data; name="image"; filename="egg_sandwhich.png"
+Content-Type: image/png
+
+< ./egg_sandwhich.png
+------MyBoundaryString--
+
+############## Get status of specific food image ###################
+GET http://localhost:5000/api/food/52135098-c5e3-4396-852b-9829240bdbad
+
+
+############## POST food image analysis ##########################
+POST http://localhost:5000/api/food/23c8f8e4-4850-4f23-a786-83c5bcfa40f4/analysis_result
+Content-Type: application/json
+
+{
+    "food_type": "egg"
+}
+
+
+####################### Get analysis result ###########################
+http://localhost:5000/api/food/23c8f8e4-4850-4f23-a786-83c5bcfa40f4/analysis_result
