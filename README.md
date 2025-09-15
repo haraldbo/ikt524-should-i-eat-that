@@ -1,5 +1,5 @@
 # Food API
-Contains a simple flask api that can store and retrieve images.
+Contains a simple flask api for storing and retrieving food images. Sqlite3 database.
 
 ``python api.py``
 
