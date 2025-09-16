@@ -1,5 +1,7 @@
 # Food API
-Contains a simple flask api ([api.py](./api.py)) for storing and retrieving food images
+<img src="egg_sandwhich.png" alt="drawing" width="100"/>
+
+Contains a simple Flask api ([api.py](./api.py)) for storing and retrieving food images
 
 ``python api.py``
 
