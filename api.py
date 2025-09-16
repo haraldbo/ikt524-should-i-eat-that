@@ -1,11 +1,9 @@
 import database
 from flask import Flask, request, jsonify, abort, send_file, make_response
 from PIL import Image
-from datetime import datetime
 from io import BytesIO
 import time
 app = Flask(__name__)
-
 
 base_path = "/api"
 
@@ -13,6 +11,26 @@ base_path = "/api"
 @app.route(f'{base_path}/status')
 def get_api_status():
     return "api is doing great!"
+
+
+@app.route(f'{base_path}/food-work')
+def get_work():
+    long_poll_wait_seconds = 30
+    time_start = time.time()
+    while True:
+        ids = database.get_unprocessed_foods()
+        if len(ids) > 0:
+            break
+
+        if time.time() - time_start >= long_poll_wait_seconds:
+            break
+
+        time.sleep(0.5)
+
+    # Returns list of food images (ids) that are not processed
+    return jsonify({
+        "food_ids": ids
+    })
 
 
 @app.route(f"{base_path}/food/<id>")
@@ -44,7 +62,7 @@ def post_food_analysis(id: str):
 @app.route(f"{base_path}/food/<id>/analysis_result")
 def get_food_analysis(id: str):
     time_start = time.time()
-    
+
     # long poll
     max_wait_seconds = 30
     while True:
