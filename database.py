@@ -125,5 +125,5 @@ def test():
 
 
 if __name__ == "__main__":
-    # init_db()
-    test()
+    init_db()
+    #test()
