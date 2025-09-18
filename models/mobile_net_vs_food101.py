@@ -7,6 +7,7 @@ from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms.functional import pil_to_tensor
 from PIL import Image
 from tqdm import tqdm
+import numpy as np
 
 
 def train_one_epoch(model: MobileNetV3, dataloader: DataLoader, optimizer: Optimizer, loss_fn: nn.Module):
@@ -21,14 +22,37 @@ def train_one_epoch(model: MobileNetV3, dataloader: DataLoader, optimizer: Optim
         loss_sum += loss.item()
         optimizer.step()
 
-    return loss_sum
+    return {
+        "loss_sum": loss_sum
+    }
+
+
+def batch_confusion(predictions: torch.Tensor, targets: torch.Tensor):
+    batch_confusion = np.zeros((101, 101))
+    for actual, predicted in zip(targets, predictions.argmax(1)):
+        batch_confusion[actual, predicted] += 1
+    
+    return batch_confusion
 
 
 def validate_one_epoch(model: MobileNetV3, dataloader: DataLoader, loss_fn: nn.Module):
-    pass
+    confusion_matrix = np.zeros((101, 101))
+    loss_sum = 0
+    for images, targets in tqdm(dataloader, desc="validating"):
+        predictions = model(images)
+        loss = loss_fn(predictions, targets)
+
+        confusion_matrix += batch_confusion(predictions, targets)
+
+        loss_sum += loss.item()
+
+    return {
+        "confusion_matrix": confusion_matrix,
+        "loss_sum": loss_sum
+    }
 
 
-def collate_fn(arg):
+def pil_to_tensor_and_stuff(arg):
     targets = []
     tensor_images = []
     for img, clazz in arg:
@@ -74,12 +98,26 @@ def train_model():
         dataset=train,
         shuffle=True,
         batch_size=32,
-        collate_fn=collate_fn,
+        collate_fn=pil_to_tensor_and_stuff,
+    )
+
+    val_dataloader = DataLoader(
+        dataset=val,
+        batch_size=32,
+        collate_fn=pil_to_tensor_and_stuff
     )
 
     n_epochs = 1000
     for e in range(n_epochs):
-        stats = train_one_epoch(model, train_dataloader, optimizer, loss_fn)
+        model.train()
+#        stats = train_one_epoch(model, train_dataloader, optimizer, loss_fn)
+
+        model.eval()
+        with torch.no_grad():
+            stats = validate_one_epoch(model, val_dataloader, loss_fn)
+
+            confusion_matrix = stats["confusion_matrix"]
+            
 
 
 if __name__ == "__main__":
