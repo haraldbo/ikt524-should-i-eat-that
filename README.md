@@ -1,7 +1,8 @@
-# Food API
-<img src="egg_sandwhich.png" alt="drawing" width="100"/>
+# Food backend
+<img src="pizza.png" alt="drawing" width="100"/>
 
-Contains a simple Flask api ([api.py](./api.py)) for storing and retrieving food images
+## API
+A simple flask application ([api.py](./api.py)) for storing and retrieving food images
 
 ``python api.py``
 

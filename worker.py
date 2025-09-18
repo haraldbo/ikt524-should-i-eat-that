@@ -46,6 +46,7 @@ class MobileNetModelWorker:
         self.class_to_label_map = load_label_map()
 
     def work_one_cycle(self):
+        print("Getting work")
         food_ids = get_work()
 
         if len(food_ids) == 0:
