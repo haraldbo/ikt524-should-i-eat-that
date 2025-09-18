@@ -7,10 +7,10 @@ POST http://localhost:5000/api/food
 Content-Type: multipart/form-data; boundary=----MyBoundaryString
 
 ------MyBoundaryString
-Content-Disposition: form-data; name="image"; filename="egg_sandwhich.png"
+Content-Disposition: form-data; name="image"; filename="hamburger.png"
 Content-Type: image/png
 
-< ./egg_sandwhich.png
+< ./hamburger.png
 ------MyBoundaryString--
 
 ############## Get status of specific food image ###################

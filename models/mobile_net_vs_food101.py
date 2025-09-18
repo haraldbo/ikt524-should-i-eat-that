@@ -99,11 +99,11 @@ def train_model():
     model.classifier = nn.Sequential(
         nn.Linear(960, 256),
         nn.ReLU(),
-        nn.Dropout(0.2),
-        nn.Linear(256, 256),
+        nn.Dropout(0.5),
+        nn.Linear(256, 128),
         nn.ReLU(),
-        nn.Dropout(0.2),
-        nn.Linear(256, 101)
+        nn.Dropout(0.3),
+        nn.Linear(128, 101)
     )
 
     model = model.to(Settings.DEVICE)
