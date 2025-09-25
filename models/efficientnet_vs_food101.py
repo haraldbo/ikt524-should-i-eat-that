@@ -158,7 +158,7 @@ def train_model():
     val_losses = []
     train_losses = []
     lowest_val_loss = float('inf')
-
+    highest_accuracy = 0
     for e in range(n_epochs):
         print("*" * 10, "Epoch", e+1, "*" * 10)
         model.train()
@@ -175,8 +175,9 @@ def train_model():
             confusion_matrix = val_stats["confusion_matrix"]
             num_correct = confusion_matrix.trace()
             total = confusion_matrix.sum()
-            print("val acc:", num_correct/total)
-            val_accuracies.append(num_correct/total)
+            val_accuracy = num_correct / total
+            print("val acc:", val_accuracy)
+            val_accuracies.append(val_accuracy)
             val_losses.append(val_stats["loss_sum"])
 
         plt.title("Loss")
@@ -194,16 +195,23 @@ def train_model():
 
         if val_stats["loss_sum"] < lowest_val_loss:
             lowest_val_loss = val_stats["loss_sum"]
-            torch.jit.script(model).save(Settings.OUT_DIR / "model.pt")
+            torch.jit.script(model).save(Settings.OUT_DIR / "model_loss.pt")
             torch.save(model.state_dict(), Settings.OUT_DIR /
-                       "model_state_dict.pt")
+                       "model_loss_state_dict.pt")
 
-        with open(Settings.OUT_DIR / "loss.csv", "+a") as f:
+        if val_accuracy > highest_accuracy:
+            highest_accuracy = val_accuracy
+            torch.jit.script(model).save(
+                Settings.OUT_DIR / "model_accuracy.pt")
+            torch.save(model.state_dict(), Settings.OUT_DIR /
+                       "model_state_dict_accuracy.pt")
+
+        with open(Settings.OUT_DIR / "stats.csv", "+a") as f:
             if e == 0:
-                f.write("train,val\n")
+                f.write("train loss,val loss, val acc\n")
 
             f.write(
-                f"{str(train_stats['loss_sum'])}, {str(val_stats['loss_sum'])}\n")
+                f"{str(train_stats['loss_sum'])}, {str(val_stats['loss_sum'])}, {str(val_accuracy)}\n")
 
 
 if __name__ == "__main__":
