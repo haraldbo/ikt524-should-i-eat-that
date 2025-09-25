@@ -103,7 +103,7 @@ def get_food_img_analysis(id):
     conn = get_connection()
     cursor = conn.execute(
         "SELECT food_type FROM food_analysis WHERE food_id = (?)", (id,))
-    food_type = cursor.fetchone()
+    food_type = cursor.fetchone()[0]
     conn.close()
 
     return food_type

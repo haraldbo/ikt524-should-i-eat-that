@@ -7,10 +7,10 @@ POST http://localhost:5000/api/food
 Content-Type: multipart/form-data; boundary=----MyBoundaryString
 
 ------MyBoundaryString
-Content-Disposition: form-data; name="image"; filename="ramen.png"
+Content-Disposition: form-data; name="image"; filename="carrotcake.png"
 Content-Type: image/png
 
-< ./ramen.png
+< ./test_images/carrotcake.png
 ------MyBoundaryString--
 
 ############## Get status of specific food image ###################
@@ -27,4 +27,6 @@ Content-Type: application/json
 
 
 ####################### Get analysis result ###########################
-http://localhost:5000/api/food/23c8f8e4-4850-4f23-a786-83c5bcfa40f4/analysis_result
+GET http://localhost:5000/api/food/a44c8cd5-5430-47a5-9e3d-51d75d012b62/analysis_result
+
+
