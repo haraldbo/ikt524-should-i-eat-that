@@ -175,8 +175,7 @@ def train_model():
             confusion_matrix = val_stats["confusion_matrix"]
             num_correct = confusion_matrix.trace()
             total = confusion_matrix.sum()
-            print("val acc:", num_correct/total,
-                  f"(Best is {lowest_val_loss})")
+            print("val acc:", num_correct/total)
             val_accuracies.append(num_correct/total)
             val_losses.append(val_stats["loss_sum"])
 
