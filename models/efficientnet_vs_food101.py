@@ -91,7 +91,7 @@ def pil_to_tensor_and_stuff(arg, apply_augmentation):
         my_transforms.append(transforms.RandomHorizontalFlip(p=0.5))
         my_transforms.append(transforms.RandomPerspective(
             distortion_scale=0.2, p=0.5))
-        my_transforms.append(transforms.RandomRotation(degrees=15))
+        my_transforms.append(transforms.RandomRotation(degrees=20))
 
     my_transforms += [
         transforms.ToTensor(),
@@ -128,13 +128,18 @@ def train_model():
     model = efficientnet_v2_s(weights=EfficientNet_V2_S_Weights.IMAGENET1K_V1)
 
     model.classifier = nn.Sequential(
-        nn.Dropout(0.2, inplace=True),
-        nn.Linear(1280, 101),
+        nn.Linear(1280, 512),
+        nn.ReLU(),
+        nn.Dropout(0.4),
+        nn.Linear(512, 101),
     )
     model = model.to(Settings.DEVICE)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.0005)
+    optimizer = AdamW([
+        {"params": model.features.parameters(), "lr": 0.000005},
+        {"params": model.classifier.parameters(), "lr": 0.0001}
+    ])
     train_dataloader = DataLoader(
         dataset=train,
         shuffle=True,
