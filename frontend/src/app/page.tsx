@@ -104,7 +104,7 @@ const FoodDetectionApp = () => {
         foodType: analysisResult.food_type,
         id: id,
         // Mock data for demonstration - you'll replace this with real API data
-        confidence: Math.random() * 30 + 70,
+        confidence: analysisResult.confidence * 100,
         volume: Math.random() * 200 + 100,
         calories: Math.floor(Math.random() * 400 + 200),
         protein: Math.floor(Math.random() * 30 + 10),

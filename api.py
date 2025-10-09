@@ -47,13 +47,12 @@ def get_food(id: str):
 @app.route(f"{base_path}/food/<id>/image")
 def get_food_image(id: str):
     img = database.get_food_img(id)
-    
+
     img_io = BytesIO()
-    
+
     img.save(img_io, 'PNG')
 
     img_io.seek(0)
-
 
     return send_file(img_io, mimetype='image/png')
 
@@ -61,7 +60,8 @@ def get_food_image(id: str):
 @app.route(f"{base_path}/food/<id>/analysis_result", methods=["POST"])
 def post_food_analysis(id: str):
     food_type = request.json.get("food_type")
-    database.insert_food_img_analysis(id, food_type)
+    confidence = request.json.get("confidence")
+    database.insert_food_img_analysis(id, food_type, confidence)
     print("Image processed", time.time())
     return ""
 
@@ -82,10 +82,11 @@ def get_food_analysis(id: str):
         if time.time() - time_start >= max_wait_seconds:
             abort(504)
 
-    food_type = database.get_food_img_analysis(id)
+    food_type, confidence = database.get_food_img_analysis(id)
 
     return jsonify({
-        "food_type": food_type
+        "food_type": food_type,
+        "confidence": confidence
     })
 
 
@@ -93,7 +94,7 @@ def get_food_analysis(id: str):
 def request_food_content():
     print("Image received", time.time())
     file = request.files['image']
-    img = Image.open(file).copy() 
+    img = Image.open(file).copy()
 
     id = database.insert_food(img)
 

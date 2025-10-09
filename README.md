@@ -22,5 +22,12 @@ Sqlite3 database. Run the init_db function in [database.py](./database.py) to in
 ## Models
 Python scripts for training the models. 
 
+## Web frontend for testing
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## Extra stuff
 See [examples.http](./examples.http) for some http client tests

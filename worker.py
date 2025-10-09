@@ -77,12 +77,16 @@ class MobileNetModelWorker:
 
         pred = self.model(batch)
 
+        probs = pred.softmax(1)
+
         predicted_class = pred.argmax(1)
 
         food_type = self.class_to_label_map[predicted_class.item()]
 
+        probalibity = round(probs[0, predicted_class].item(), 3)
         analysis_result = {
-            "food_type": food_type
+            "food_type": food_type,
+            "confidence": probalibity
         }
 
         send_food_analysis_result(id, analysis_result)

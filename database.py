@@ -28,6 +28,7 @@ def init_db():
     create_food_analysis_table_sql = """
     CREATE TABLE food_analysis(
         food_type TEXT, 
+        confidence REAL, 
         food_id INTEGER, 
         FOREIGN KEY(food_id) REFERENCES food(id)
     );
@@ -87,10 +88,10 @@ def get_food_img(id):
     return image
 
 
-def insert_food_img_analysis(id, food_type):
+def insert_food_img_analysis(id, food_type, confidence):
     conn = get_connection()
     conn.execute(
-        "INSERT INTO food_analysis(food_id, food_type) VALUES (?, ?)", (id, food_type))
+        "INSERT INTO food_analysis(food_id, food_type, confidence) VALUES (?, ?, ?)", (id, food_type, confidence))
 
     conn.execute("UPDATE food SET status=? WHERE id = ?",
                  (FoodStatus.COMPLETED, id))
@@ -102,19 +103,21 @@ def insert_food_img_analysis(id, food_type):
 def get_food_img_analysis(id):
     conn = get_connection()
     cursor = conn.execute(
-        "SELECT food_type FROM food_analysis WHERE food_id = (?)", (id,))
-    food_type = cursor.fetchone()[0]
+        "SELECT food_type, confidence FROM food_analysis WHERE food_id = (?)", (id,))
+    fetched = cursor.fetchone()
+    food_type = fetched[0]
+    confidence = fetched[1]
     conn.close()
 
-    return food_type
+    return food_type, confidence
 
 
 def test():
-    img = Image.open("egg_sandwhich.png")
+    img = Image.open("test_images/pizza.png")
     id = insert_food(img)
     food = get_food_status(id)
     fetched_img = get_food_img(id)
-    insert_food_img_analysis(id, "SALAD")
+    insert_food_img_analysis(id, "SALAD", 0.94)
 
     food_type = get_food_img_analysis(id)
     print(food_type)
