@@ -6,7 +6,7 @@ from torchvision.transforms.functional import pil_to_tensor
 
 
 class Settings:
-    API_BASE_URL = "http://localhost:5000/api"
+    API_BASE_URL = "http://127.0.0.1:5000/api"
     WORK_URL = f"{API_BASE_URL}/food-work"
     FOOD_URL = f"{API_BASE_URL}/food"
     DEVICE = "cpu"

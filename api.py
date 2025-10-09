@@ -67,7 +67,7 @@ def get_food_analysis(id: str):
     max_wait_seconds = 30
     while True:
         status = database.get_food_status(id)
-        if status == "PROCESSED":
+        if status == "COMPLETED":
             break
         time.sleep(0.5)
 
