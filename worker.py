@@ -3,6 +3,7 @@ import time
 from PIL import Image
 import torch
 from torchvision.transforms.functional import pil_to_tensor
+import io
 
 
 class Settings:
@@ -13,7 +14,14 @@ class Settings:
 
 
 def get_food_image(id) -> Image.Image:
-    return Image.open(requests.get(f"{Settings.FOOD_URL}/{id}/image", stream=True).raw)
+    print("make request", time.time())
+    response = requests.get(f"{Settings.FOOD_URL}/{id}/image")
+    response.raw.chunked = True
+    print("request received", time.time())
+    img_data = io.BytesIO(response.content)
+    img = Image.open(img_data)
+    print("Got image", time.time())
+    return img
 
 
 def send_food_analysis_result(id, analysis_result):
@@ -42,7 +50,7 @@ class MobileNetModelWorker:
 
     def __init__(self):
         self.model = torch.jit.load(
-            "model.pt", map_location=torch.device("cpu")).to(Settings.DEVICE)
+            "dummy_model.pt", map_location=torch.device("cpu")).to(Settings.DEVICE)
         self.class_to_label_map = load_label_map()
 
     def work_one_cycle(self):
