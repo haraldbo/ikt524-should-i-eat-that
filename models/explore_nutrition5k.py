@@ -279,11 +279,6 @@ class Nutrition5kExplorer:
         
         print("\n" + "=" * 70)
         print("Exploration complete!")
-        print("\nNext Steps:")
-        print("  1. Review the nutritional value distributions")
-        print("  2. Prepare training dataset for model")
-        print("  3. Train nutrition prediction model")
-        print("  4. Integrate with existing food detection worker")
         print("=" * 70)
 
         # Optionally save cleaned combined dataset
