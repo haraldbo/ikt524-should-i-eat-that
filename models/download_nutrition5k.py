@@ -6,9 +6,13 @@ The following script is used to:
 4. List the contents of the downloaded dataset.
 This is useful for setting up the dataset for training a nutrition prediction model.
 It is recommended to start by downloading only the metadata files, as the full dataset is large.
-Usage:
-    python models/download_nutrition5k.py --metadata-only
 
+Usage:
+  python models/download_nutrition5k.py --metadata-only
+  This will get you the cafe 1 and cafe 2 dish metadata CSVs.
+  If you dont get the ingredient metadata CSV, you can download it later directly from the source 
+  @https://console.cloud.google.com/storage/browser/nutrition5k_dataset.
+  nutrition5k_dataset/metadata/ingredients_metadata.csv
 """
 
 
@@ -52,7 +56,8 @@ class Nutrition5kDownloader:
         base_http_url = "https://storage.googleapis.com/nutrition5k_dataset/nutrition5k_dataset/metadata"
         metadata_files = [
             "dish_metadata_cafe1.csv",
-            "dish_metadata_cafe2.csv", 
+            "dish_metadata_cafe2.csv",
+            "nutrition5k_dataset_metadata_ingredients_metadata.csv" 
         ]
 
         # Create metadata directory
@@ -62,7 +67,7 @@ class Nutrition5kDownloader:
         for filename in metadata_files:
             url = f"{base_http_url}/{filename}"
             dest = metadata_path / filename
-            print(f"⬇️  Downloading {filename}")
+            print(f"⬇Downloading {filename}")
             download_file_http(url, dest)
         
         print("Metadata downloaded successfully.")
