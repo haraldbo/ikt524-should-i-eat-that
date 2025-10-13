@@ -19,8 +19,11 @@ A simple flask application ([api.py](./api.py)) for storing and retrieving food 
 ## Database
 Sqlite3 database. Run the init_db function in [database.py](./database.py) to initialize it
 
-## Models
-Python scripts for training the models. 
+## Training scripts
+Python scripts for training the models.
+
+## Dataset analysis
+Python scripts for analysing the data
 
 ## Web frontend for testing
 ```bash

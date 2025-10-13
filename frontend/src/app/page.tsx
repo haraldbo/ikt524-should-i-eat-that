@@ -103,8 +103,8 @@ const FoodDetectionApp = () => {
       setResult({
         foodType: analysisResult.food_type,
         id: id,
-        // Mock data for demonstration - you'll replace this with real API data
         confidence: analysisResult.confidence * 100,
+        // Mock data for demonstration - you'll replace this with real API data
         volume: Math.random() * 200 + 100,
         calories: Math.floor(Math.random() * 400 + 200),
         protein: Math.floor(Math.random() * 30 + 10),
