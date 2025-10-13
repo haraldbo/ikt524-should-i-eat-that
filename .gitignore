@@ -3,3 +3,4 @@ food.db
 /food-101
 food-101.tar.gz
 model_efficient_net.pt
+*.pt

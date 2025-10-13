@@ -45,8 +45,8 @@ class Food101PredictionResult:
 
 class MobileNet(Model):
 
-    def __init__(self, model_name):
-        super().__init__(model_name)
+    def __init__(self):
+        super().__init__("mobile net")
         self.model = torch.jit.load(
             "./trained_models/mobile_net/model.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
         self.food101_prediction_results = Food101PredictionResult()
@@ -68,13 +68,14 @@ class MobileNet(Model):
 
 class EfficientNet(Model):
 
-    def __init__(self, model_name):
-        super().__init__(model_name)
+    def __init__(self):
+        super().__init__("EFficientNet")
         self.model = torch.jit.load(
-            "efficient_net.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
+            "./trained_models/efficient_net/model.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
         self.food101_prediction = Food101PredictionResult()
 
     def get_prediction(self, img):
+        img = img.convert("RGB")
         img_tensor = transforms.Compose([
             transforms.Resize((480, 480)),
             transforms.ToTensor(),
@@ -158,5 +159,5 @@ def work(worker: Worker):
 
 
 if __name__ == "__main__":
-    worker = Worker(MobileNet("Mobile net"))
+    worker = Worker(EfficientNet())
     work(worker)
