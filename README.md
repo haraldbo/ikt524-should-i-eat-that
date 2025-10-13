@@ -7,8 +7,7 @@
 </div>
 
 ## API
-A simple flask application ([api.py](./api.py)) for storing and retrieving food images
-
+Python Flask application ([api.py](./api.py)) for storing and retrieving food images and inference results
 ``python api.py``
 
 ## Worker
@@ -20,10 +19,10 @@ A simple flask application ([api.py](./api.py)) for storing and retrieving food 
 Sqlite3 database. Run the init_db function in [database.py](./database.py) to initialize it
 
 ## Training scripts
-Python scripts for training the models.
+Python scripts for training the models
 
 ## Dataset analysis
-Python scripts for analysing the data
+Python scripts for analysing the datasets
 
 ## Web frontend for testing
 ```bash
