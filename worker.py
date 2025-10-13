@@ -4,6 +4,7 @@ from PIL import Image
 import torch
 from torchvision.transforms.functional import pil_to_tensor
 import io
+import torchvision.transforms as transforms
 
 
 class Settings:
@@ -11,6 +12,83 @@ class Settings:
     WORK_URL = f"{API_BASE_URL}/food-work"
     FOOD_URL = f"{API_BASE_URL}/food"
     DEVICE = "cpu"
+
+
+class Model:
+
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+
+    def get_prediction(self, img: Image.Image):
+        raise NotImplementedError()
+
+
+class Food101PredictionResult:
+
+    def __init__(self):
+        self.class_to_label_map = load_label_map()
+
+    def __call__(self, pred: torch.Tensor):
+        probs = pred.softmax(1)
+
+        predicted_class = pred.argmax(1)
+
+        food_type = self.class_to_label_map[predicted_class.item()]
+
+        probalibity = round(probs[0, predicted_class].item(), 3)
+
+        return {
+            "food_type": food_type,
+            "confidence": probalibity
+        }
+
+
+class MobileNet(Model):
+
+    def __init__(self, model_name):
+        super().__init__(model_name)
+        self.model = torch.jit.load(
+            "./trained_models/mobile_net/model.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
+        self.food101_prediction_results = Food101PredictionResult()
+
+    def get_prediction(self, img):
+        img = img.resize((224, 224)).convert("RGB")
+
+        # convert to tensor and normalize it
+        img_tensor = pil_to_tensor(img).type(torch.float32)
+        img_tensor -= 256/2
+        img_tensor /= 256
+
+        batch = torch.stack([img_tensor]).to(Settings.DEVICE)
+
+        pred = self.model(batch)
+
+        return self.food101_prediction_results(pred)
+
+
+class EfficientNet(Model):
+
+    def __init__(self, model_name):
+        super().__init__(model_name)
+        self.model = torch.jit.load(
+            "efficient_net.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
+        self.food101_prediction = Food101PredictionResult()
+
+    def get_prediction(self, img):
+        img_tensor = transforms.Compose([
+            transforms.Resize((480, 480)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.5, 0.5, 0.5],
+                std=[0.5, 0.5, 0.5]  # a bit weird values?
+            )
+        ])(img)
+
+        batch = torch.stack([img_tensor]).to(Settings.DEVICE)
+
+        pred = self.model(batch)
+
+        return self.food101_prediction(pred)
 
 
 def get_food_image(id) -> Image.Image:
@@ -46,15 +124,14 @@ def load_label_map():
     return labels
 
 
-class MobileNetModelWorker:
+class Worker:
 
-    def __init__(self):
-        self.model = torch.jit.load(
-            "dummy_model.pt", map_location=torch.device("cpu")).to(Settings.DEVICE)
-        self.class_to_label_map = load_label_map()
+    def __init__(self, model: Model):
+        print("Using model", model.model_name)
+        self.model = model
 
     def work_one_cycle(self):
-        print("Getting work")
+        print("Wait for work")
         food_ids = get_work()
 
         if len(food_ids) == 0:
@@ -66,33 +143,12 @@ class MobileNetModelWorker:
     def process_food(self, id):
         food_img = get_food_image(id)
 
-        food_img = food_img.resize((224, 224)).convert("RGB")
+        prediction = self.model.get_prediction(food_img)
 
-        # convert to tensor and normalize it
-        img_tensor = pil_to_tensor(food_img).type(torch.float32)
-        img_tensor -= 256/2
-        img_tensor /= 256
-
-        batch = torch.stack([img_tensor]).to(Settings.DEVICE)
-
-        pred = self.model(batch)
-
-        probs = pred.softmax(1)
-
-        predicted_class = pred.argmax(1)
-
-        food_type = self.class_to_label_map[predicted_class.item()]
-
-        probalibity = round(probs[0, predicted_class].item(), 3)
-        analysis_result = {
-            "food_type": food_type,
-            "confidence": probalibity
-        }
-
-        send_food_analysis_result(id, analysis_result)
+        send_food_analysis_result(id, prediction)
 
 
-def work(worker: MobileNetModelWorker):
+def work(worker: Worker):
     while True:
         try:
             worker.work_one_cycle()
@@ -102,5 +158,5 @@ def work(worker: MobileNetModelWorker):
 
 
 if __name__ == "__main__":
-    worker = MobileNetModelWorker()
+    worker = Worker(MobileNet("Mobile net"))
     work(worker)
