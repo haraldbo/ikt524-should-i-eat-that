@@ -43,6 +43,16 @@ class Food101PredictionResult:
         }
 
 
+class NutrientPredictionResult:
+
+    def __init__(self):
+        self.mean = torch.tensor([195.3, 12.5, 16.2, 9.8]).reshape((1, 4))
+        self.std = torch.tensor([313.1, 16.7, 29.8, 25.5]).reshape((1, 4))
+
+    def __call__(self, pred: torch.Tensor):
+        pass
+
+
 class MobileNet(Model):
 
     def __init__(self):
@@ -90,6 +100,37 @@ class EfficientNet(Model):
         pred = self.model(batch)
 
         return self.food101_prediction(pred)
+
+
+class EfficientNetNutrients(Model):
+
+    def __init__(self):
+        super().__init__("EFficientNet")
+        self.model = torch.jit.load(
+            "./trained_models/efficient_net_nutrients/model.pt", map_location=torch.device(Settings.DEVICE)).to(Settings.DEVICE)
+        self.food101_prediction = Food101PredictionResult()
+        self.nutrient_prediction = NutrientPredictionResult()
+        self.pre_process = transforms.Compose([
+            transforms.Resize((480, 480)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.5, 0.5, 0.5],
+                std=[0.5, 0.5, 0.5]
+            )
+        ])
+
+    def get_prediction(self, img):
+        img = img.convert("RGB")
+        img_tensor = self.pre_process(img)
+
+        batch = torch.stack([img_tensor]).to(Settings.DEVICE)
+
+        pred = self.model(batch)
+
+        return {
+            *self.food101_prediction(pred[:, :101]),
+            *self.nutrient_prediction(pred[:, 101:])
+        }
 
 
 def get_food_image(id) -> Image.Image:
