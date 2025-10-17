@@ -280,12 +280,12 @@ const FoodDetectionApp = () => {
 
                   {/* Nutritional Info Grid */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white rounded-lg p-4 shadow">
+                    {/* <div className="bg-white rounded-lg p-4 shadow">
                       <p className="text-sm text-gray-600">Estimated Volume</p>
                       <p className="text-2xl font-bold text-blue-700">
                         {result.volume.toFixed(0)} ml
                       </p>
-                    </div>
+                    </div> */}
                     <div className="bg-white rounded-lg p-4 shadow">
                       <p className="text-sm text-gray-600">Calories</p>
                       <p className="text-2xl font-bold text-orange-600">
@@ -310,7 +310,8 @@ const FoodDetectionApp = () => {
                         {result.fat.toFixed(1)}g
                       </p>
                     </div>
-                    <div className="bg-white rounded-lg p-4 shadow">
+                    
+                    {/* <div className="bg-white rounded-lg p-4 shadow">
                       <p className="text-sm text-gray-600">Recommendation</p>
                       <div className="flex items-center gap-2 mt-1">
                         {result.recommendation === 'YES' ? (
@@ -330,7 +331,7 @@ const FoodDetectionApp = () => {
                           </>
                         )}
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Action Buttons */}
