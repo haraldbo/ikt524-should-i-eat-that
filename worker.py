@@ -50,7 +50,15 @@ class NutrientPredictionResult:
         self.std = torch.tensor([313.1, 16.7, 29.8, 25.5]).reshape((1, 4))
 
     def __call__(self, pred: torch.Tensor):
-        pass
+        # # total_calories, total_protein, total_carb, total_fat
+        calories, protein, carb, fat = (
+            (pred * self.std) + self.mean)[0].tolist()
+        return {
+            "calories": calories,
+            "protein": protein,
+            "carb": carb,
+            "fat": fat
+        }
 
 
 class MobileNet(Model):
@@ -128,8 +136,8 @@ class EfficientNetNutrients(Model):
         pred = self.model(batch)
 
         return {
-            *self.food101_prediction(pred[:, :101]),
-            *self.nutrient_prediction(pred[:, 101:])
+            **self.food101_prediction(pred[:, :101]),
+            **self.nutrient_prediction(pred[:, 101:])
         }
 
 
@@ -200,5 +208,5 @@ def work(worker: Worker):
 
 
 if __name__ == "__main__":
-    worker = Worker(EfficientNet())
+    worker = Worker(EfficientNetNutrients())
     work(worker)

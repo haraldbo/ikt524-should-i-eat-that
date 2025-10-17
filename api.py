@@ -61,7 +61,12 @@ def get_food_image(id: str):
 def post_food_analysis(id: str):
     food_type = request.json.get("food_type")
     confidence = request.json.get("confidence")
-    database.insert_food_img_analysis(id, food_type, confidence)
+    calories = request.json.get("calories")
+    protein = request.json.get("protein")
+    fat = request.json.get("fat")
+    carb = request.json.get("carb")
+    database.insert_food_img_analysis(
+        id, food_type, confidence, calories, protein, carb, fat)
     print("Image processed", time.time())
     return ""
 
@@ -82,11 +87,16 @@ def get_food_analysis(id: str):
         if time.time() - time_start >= max_wait_seconds:
             abort(504)
 
-    food_type, confidence = database.get_food_img_analysis(id)
+    food_type, confidence, calories, protein, carb, fat = database.get_food_img_analysis(
+        id)
 
     return jsonify({
         "food_type": food_type,
-        "confidence": confidence
+        "confidence": confidence,
+        "calories": calories,
+        "protein": protein,
+        "carb": carb,
+        "fat": fat
     })
 
 

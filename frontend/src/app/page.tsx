@@ -106,8 +106,10 @@ const FoodDetectionApp = () => {
         confidence: analysisResult.confidence * 100,
         // Mock data for demonstration - you'll replace this with real API data
         volume: Math.random() * 200 + 100,
-        calories: Math.floor(Math.random() * 400 + 200),
-        protein: Math.floor(Math.random() * 30 + 10),
+        calories: analysisResult.calories,
+        protein: analysisResult.protein,
+        carb: analysisResult.carb,
+        fat: analysisResult.fat,
         recommendation: Math.random() > 0.3 ? 'YES' : 'NOT SURE'
       });
       
@@ -287,13 +289,25 @@ const FoodDetectionApp = () => {
                     <div className="bg-white rounded-lg p-4 shadow">
                       <p className="text-sm text-gray-600">Calories</p>
                       <p className="text-2xl font-bold text-orange-600">
-                        {result.calories} kcal
+                        {result.calories.toFixed(1)} kcal
                       </p>
                     </div>
                     <div className="bg-white rounded-lg p-4 shadow">
                       <p className="text-sm text-gray-600">Protein</p>
                       <p className="text-2xl font-bold text-purple-600">
-                        {result.protein}g
+                        {result.protein.toFixed(1)}g
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow">
+                      <p className="text-sm text-gray-600">Carbohydrates</p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {result.carb.toFixed(1)}g
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow">
+                      <p className="text-sm text-gray-600">Fats</p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {result.fat.toFixed(1)}g
                       </p>
                     </div>
                     <div className="bg-white rounded-lg p-4 shadow">

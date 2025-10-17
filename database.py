@@ -29,6 +29,10 @@ def init_db():
     CREATE TABLE food_analysis(
         food_type TEXT, 
         confidence REAL, 
+        calories REAL,
+        protein REAL,
+        carb REAL,
+        fat REAL, 
         food_id INTEGER, 
         FOREIGN KEY(food_id) REFERENCES food(id)
     );
@@ -88,10 +92,11 @@ def get_food_img(id):
     return image
 
 
-def insert_food_img_analysis(id, food_type, confidence):
+def insert_food_img_analysis(id, food_type, confidence, calories, protein, carb, fat):
     conn = get_connection()
     conn.execute(
-        "INSERT INTO food_analysis(food_id, food_type, confidence) VALUES (?, ?, ?)", (id, food_type, confidence))
+        "INSERT INTO food_analysis(food_id, food_type, confidence, calories, protein, carb, fat) \
+            VALUES (?, ?, ?, ?, ?, ?, ?)", (id, food_type, confidence, calories, protein, carb, fat))
 
     conn.execute("UPDATE food SET status=? WHERE id = ?",
                  (FoodStatus.COMPLETED, id))
@@ -103,13 +108,17 @@ def insert_food_img_analysis(id, food_type, confidence):
 def get_food_img_analysis(id):
     conn = get_connection()
     cursor = conn.execute(
-        "SELECT food_type, confidence FROM food_analysis WHERE food_id = (?)", (id,))
+        "SELECT food_type, confidence, calories, protein, carb, fat FROM food_analysis WHERE food_id = (?)", (id,))
     fetched = cursor.fetchone()
     food_type = fetched[0]
     confidence = fetched[1]
+    calories = fetched[2]
+    protein = fetched[3]
+    carb = fetched[4]
+    fat = fetched[5]
     conn.close()
 
-    return food_type, confidence
+    return food_type, confidence, calories, protein, carb, fat
 
 
 def test():
@@ -117,7 +126,7 @@ def test():
     id = insert_food(img)
     food = get_food_status(id)
     fetched_img = get_food_img(id)
-    insert_food_img_analysis(id, "SALAD", 0.94)
+    insert_food_img_analysis(id, "SALAD", 0.94, 10, 12, 14, 16)
 
     food_type = get_food_img_analysis(id)
     print(food_type)
@@ -128,5 +137,5 @@ def test():
 
 
 if __name__ == "__main__":
-    init_db()
-    #test()
+    # init_db()
+    test()
