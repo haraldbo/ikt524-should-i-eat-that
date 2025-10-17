@@ -4,3 +4,5 @@ food.db
 food-101.tar.gz
 model_efficient_net.pt
 *.pt
+/n5k
+nutrition5k.zip
